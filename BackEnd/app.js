@@ -1,11 +1,17 @@
 import exp from "express";
 import user from "./user.json" assert { type: "json" };
 import cors from "cors";
+import fs from "fs"
 
 const app = exp();
 const port=3000;
 //app.use(exp.json());
-app.use(cors())
+app.use(cors(
+    {
+        origin:"http://localhost:5173",
+        methods:["GET","DELETE","POST","PUT"]
+    }
+))
 
 app.listen(port,(err)=>{
     if(err){
@@ -31,7 +37,7 @@ app.get('/api/user/:id',(req,res)=>{
     if(getUser){
         return res.send(getUser);
     }
-    return res.status(402).send({message:"user not found"});
+    return res.status(404).send({message:"user not found"});
 })
 
 //delete user
@@ -42,11 +48,14 @@ app.delete('/api/user/:id',(req,res)=>{
         return res.status(400).send({message:"invalide request or user"})
     }
     const updateUser=user.filter((user)=>user.id !==id)
-      const exists = user.some(u => u.id === id);
+      const exists = user.some((u) => u.id === id);
 
   if (!exists) {
     return res.status(404).json({ message: "User not found" });
   }
+  fs.writeFile("./user.json",JSON.stringify(updateUser),(err)=>{
+    console.error(err)
+  })
     res.send(updateUser)  
     
     
