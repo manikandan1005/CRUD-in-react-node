@@ -48,15 +48,29 @@ app.delete('/api/user/:id',(req,res)=>{
         return res.status(400).send({message:"invalide request or user"})
     }
     const updateUser=user.filter((user)=>user.id !==id)
-      const exists = user.some((u) => u.id === id);
+    //check the id is here or not
+    const exists = user.some((u) => u.id === id);
 
   if (!exists) {
     return res.status(404).json({ message: "User not found" });
   }
+
+  //add in app.json file 
   fs.writeFile("./user.json",JSON.stringify(updateUser),(err)=>{
     console.error(err)
   })
     res.send(updateUser)  
     
     
+})
+
+app.use(exp.json());
+// post request or add new user
+app.post('/api/user',(req,res)=>{
+    const newUser=req.body;
+    newUser.id=user[user.length-1].id+1;
+    console.log(newUser);
+    res.status(201).send(newUser.name);
+    user.push(newUser)
+    fs.writeFile('./user.json',JSON.stringify(user),err=>console.error(err))
 })
