@@ -47,19 +47,30 @@ app.delete('/api/user/:id',(req,res)=>{
     if (isNaN(id)){
         return res.status(400).send({message:"invalide request or user"})
     }
+
+    const index=user.findIndex(i=>i.id===id);
+
+    
+    if(index===-1){
+        return res.status(404).send({message:'user not found'})
+    }
+
+    user.splice(index,1);
+    /*
     const updateUser=user.filter((user)=>user.id !==id)
     //check the id is here or not
+
     const exists = user.some((u) => u.id === id);
 
   if (!exists) {
     return res.status(404).json({ message: "User not found" });
-  }
+  } */
 
   //add in app.json file 
-  fs.writeFile("./user.json",JSON.stringify(updateUser),(err)=>{
+  fs.writeFile("./user.json",JSON.stringify(user),(err)=>{
     console.error(err)
   })
-    res.send(updateUser)  
+    res.send(user)  
     
     
 })
